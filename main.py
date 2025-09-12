@@ -1,6 +1,4 @@
 from core import CRePE, SPD_Model
-<<<<<<< HEAD
-=======
 from advanced.ensemble_models import EnsembleRagaClassifier
 from advanced.feature_extraction import MultiModalFeatureExtractor
 >>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
@@ -13,7 +11,6 @@ import numpy as np
 import math
 from sklearn.neighbors import KNeighborsClassifier
 
-<<<<<<< HEAD
 
 def predict_run_time(crepe, cretora_hindustani, cretora_carnatic, tradition='h', tonic=None, seconds=60):
     while True:
@@ -35,7 +32,7 @@ def predict_run_time(crepe, cretora_hindustani, cretora_carnatic, tradition='h',
 def predict_on_file(crepe, cretora, file_path, tonic):
     split_tup = os.path.splitext(file_path)
 
-=======
+
 def extract_features_for_ensemble(audio, pitches, sr=16000):
     """Extract comprehensive features for ensemble prediction"""
     extractor = MultiModalFeatureExtractor(sr=sr)
@@ -121,14 +118,12 @@ def predict_on_file_ensemble(crepe, ensemble_classifier, file_path, tradition, t
     split_tup = os.path.splitext(file_path)
     
     # Load audio file
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
     if split_tup[1] == '.mp3':
         audio = data_utils.mp3_to_wav(file_path)
     else:
         sr, audio = wavfile.read(file_path)
         if len(audio.shape) == 2:
             audio = audio.mean(1)
-<<<<<<< HEAD
 
     pitches = crepe.predict_pitches(audio)
     print("Pitch Prediction Complete")
@@ -148,9 +143,6 @@ def bhatta(hist1, hist2):
     score = math.sqrt(1 - (t) * score)
     return score
 
-
-=======
-    
     # Normalize to float32 [-1,1]
     if audio.dtype != np.float32:
         audio = audio.astype(np.float32)
@@ -231,10 +223,8 @@ class SPDKNN:
     def __init__(self, k=5):
         self.y = None
         self.knn = KNeighborsClassifier(n_neighbors=k, algorithm='ball_tree', metric=self.bhatta)
-<<<<<<< HEAD
-=======
+
         self.wd = None
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
 
     def bhatta(self, hist1, hist2):
         h1_ = np.mean(hist1)
@@ -249,7 +239,6 @@ class SPDKNN:
     def predict(self, X):
         return self.knn.predict_proba(X)
 
-<<<<<<< HEAD
 
 if __name__ == '__main__':
 
@@ -281,7 +270,6 @@ if __name__ == '__main__':
         else:
             cretora = SPD_Model('Carnatic')
         predict_on_file(crepe, cretora, p_args.runtime_file, p_args.tonic)
-=======
 if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--runtime', action='store_true',
@@ -387,4 +375,3 @@ if __name__ == '__main__':
                 print(f"Tonic: {pred_tonic} | Raga: {pred_raga}")
             else:
                 predict_on_file(crepe, cretora, p_args.runtime_file, p_args.tonic)
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
