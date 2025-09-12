@@ -103,38 +103,18 @@ def compute_spd_ps_pe(start_idx, pitches_arg, pitch_st_mapping, ps, pe, asc, rel
     prev_s = None
     start_index = -1
     end_index = -1
-    
-<<<<<<< HEAD
-    # Add bounds check here
-    if not start_idx or si >= len(start_idx):
-        return []
-        
-    idx = start_idx[si]
-=======
-    # Add bounds check here - if start_idx is empty, return empty list
+
+    # ✅ Add bounds check at very start
     if not start_idx or len(start_idx) == 0:
         return []
-        
-    # Initialize idx safely
-    if si < len(start_idx):
-        idx = start_idx[si]
-    else:
-        return []
-        
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
+
+    # ✅ Initialize idx safely
+    idx = start_idx[si] if si < len(start_idx) else 0
+
     dist_pres = False
-    dist_added = False
     shortlisted_index = []
-    
-<<<<<<< HEAD
-    while idx < n:
-        # Add bounds check before accessing start_idx[si]
-        if si >= len(start_idx):
-            break
-            
-=======
-    while idx < n and si < len(start_idx):  # Added bounds check for si
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
+
+    while idx < n and si < len(start_idx):
         p = pitches_arg[idx]
 
         if start and end and p != pe:
@@ -161,27 +141,24 @@ def compute_spd_ps_pe(start_idx, pitches_arg, pitch_st_mapping, ps, pe, asc, rel
 
         if p == ps:
             si += 1
-            
+
         if not start:
-<<<<<<< HEAD
-=======
-            # Check bounds before accessing start_idx[si]
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
             if si >= len(start_idx):
                 break
             else:
-                idx = start_idx[si]
-                idx -= 1
+                idx = start_idx[si] - 1
+
         idx += 1
 
-    # This handles an edge case where prev_dist is not empty but not yet been added to cum_pitch_dist
+    # ✅ Handle leftover segment
     if start and end:
         update_shortlisted_index(shortlisted_index, pitch_st_mapping, start_index, end_index)
 
     if not dist_pres:
         update_shortlisted_index(shortlisted_index, pitch_st_mapping, 0, n - 1)
-        
+
     return shortlisted_index
+
 
 
 def get_all_smooth_pitch_values(std=25):
