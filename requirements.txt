@@ -1,0 +1,18 @@
+numpy==1.21.6
+scipy==1.7.3
+tensorflow==2.6.4
+resampy==0.2.2
+librosa==0.8.0
+pyhocon==0.3.55
+pandas==1.1.3
+scikit-learn==0.23.2
+pydub==0.24.1
+<<<<<<< HEAD
+=======
+joblib==1.1.0
+xgboost==1.6.2
+>>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
+matplotlib==3.3.2
+tqdm==4.50.1
+h5py==2.10.0
+sounddevice==0.4.1

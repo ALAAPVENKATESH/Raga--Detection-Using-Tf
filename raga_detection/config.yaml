@@ -1,0 +1,91 @@
+seed: 42
+device: auto  # auto/cuda/cpu
+
+paths:
+  manifest: data/manifest.csv
+  feature_stats: data/feature_stats.json
+  runs_dir: runs
+
+audio:
+  sample_rate: 22050
+  mono: true
+  segment_seconds: 8.0
+  segment_hop_seconds: 4.0
+  target_db: -20.0
+
+features:
+  target_freq_bins: 128
+  hop_length: 512
+  n_fft: 2048
+  mel:
+    enabled: true
+    n_mels: 128
+    fmin: 20
+    fmax: 11025
+  cqt:
+    enabled: true
+    bins_per_octave: 24
+    n_bins: 120
+    fmin: 32.7  # C1
+  chroma:
+    enabled: true
+  tonnetz:
+    enabled: true
+  f0:
+    enabled: true
+    backend: pyin  # pyin/crepe
+    fmin: 55
+    fmax: 1760
+
+augmentation:
+  enabled: true
+  audio:
+    noise_p: 0.3
+    time_stretch_p: 0.3
+    pitch_shift_p: 0.3
+    gain_p: 0.3
+    bandpass_p: 0.3
+    tonic_shift_semitones: [-2, -1, 0, 1, 2]
+  spec:
+    specaugment_p: 0.5
+    time_masks: 2
+    time_mask_param: 24
+    freq_masks: 2
+    freq_mask_param: 16
+  mixup:
+    enabled: true
+    alpha: 0.4
+
+dataset:
+  batch_size: 16
+  num_workers: 4
+  pin_memory: true
+  prefetch_factor: 2
+
+model:
+  in_channels: 5   # mel, cqt, chroma, tonnetz, f0
+  cnn_channels: [32, 64, 128]
+  lstm_hidden: 256
+  lstm_layers: 2
+  dropout: 0.3
+  attention_dim: 128
+
+train:
+  max_epochs: 50
+  lr: 3.0e-4
+  weight_decay: 1.0e-4
+  optimizer: adamw
+  scheduler: cosine  # cosine/onecycle/none
+  label_smoothing: 0.05
+  imbalance: class_weights  # none/class_weights/focal
+  amp: true
+  grad_clip_norm: 5.0
+  val_every_n_steps: 200
+  checkpoint_metric: macro_f1
+
+inference:
+  window_seconds: 8.0
+  hop_seconds: 2.0
+  aggregation: mean  # mean/max
+  top_k: 3
+
