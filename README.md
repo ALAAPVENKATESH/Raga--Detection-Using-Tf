@@ -1,91 +1,102 @@
-# Raga-detection using Tf (Enhanced Version)  
+# 🎶 Raga Detection using TensorFlow (Enhanced Version)
 
-This repository builds upon the original [E2ERaga](https://github.com/VishwaasHegde/E2ERaga) by adding **advanced modules and expert-knowledge refinements** for more robust raga and tonic identification from audio samples.  
+This repository extends the original **E2ERaga** framework with advanced modules and expert-knowledge refinements for **robust raga and tonic identification** from audio samples.
 
-The base pipeline remains the same (CREPE-based pitch extraction + KNN models), but the enhanced version integrates **feature-rich classification, ensemble models, and musicological rules** to improve accuracy and reduce common misclassifications.  
- 
+The base pipeline remains the same (*CREPE-based pitch extraction + KNN models*), but this enhanced version integrates:
 
----
-
-## 🚀 What’s New in This Version
-- Added **advanced feature extraction** (spectral, temporal, harmonic, pitch-based).  
-- Integrated **ensemble ML models** (XGBoost, Random Forest, Gradient Boosting, SVM, MLP).  
-- Introduced **expert-knowledge rules** to resolve common raga confusions.    
-- Improved accuracy in distinguishing similar ragas   
-- Overall: **Higher stability and more reliable raga prediction** compared to the original.  
+- ✅ **Feature-rich classification** (spectral, temporal, harmonic, pitch-based)  
+- ✅ **Ensemble ML models** (XGBoost, Random Forest, Gradient Boosting, SVM, MLP)  
+- ✅ **Musicological rules** to resolve common raga confusions  
+- ✅ **Improved accuracy & stability** compared to the original  
 
 ---
 
-## Getting Started  
-Requires `python==3.7.16`  
+## 🚀 What’s New
 
-Download and install [Anaconda](https://www.anaconda.com/products/individual) for easier package management.  
+- 🎵 Advanced **feature extraction** (spectral, temporal, harmonic, pitch-based)  
+- 🤖 **Ensemble ML models** for stronger classification  
+- 📚 **Knowledge-driven refinements** to reduce misclassifications  
+- 🎼 Improved accuracy in **distinguishing similar ragas**  
+- 🔒 Overall: higher **stability & reliability** in predictions  
 
-Install the requirements:  
+---
+
+## 📦 Installation
+
+**Requirements:**
+- `python==3.7.16`  
+- [Anaconda](https://www.anaconda.com/download) *(recommended for package management)*  
+
+**Install dependencies:**
 ```bash
 pip install -r requirements.txt
-Model Setup
-Create an empty folder called model inside E2ERaga.
 
-Download the pitch model (model-full.h5) from here and place it in the model folder.
 
-Download the tonic models (Hindustani and Carnatic) from here and place them in the model folder.
+## ⚙️ Model Setup
 
-Download the Carnatic raga KNN models from here and place them in data\RagaDataset\Carnatic\model (create folders if needed).
+1. Create an empty folder called **`model/`** inside the `SPD_KNN` folder.  
+2. Download and place the following files:  
+   - **Pitch model:** [Download here](https://drive.google.com/file/d/1On0sbDARW6uVvfVQ6IJkhWtUaaH1fBw8/view?usp=sharing) → put in `model/`  
+   - **Tonic models (Hindustani & Carnatic):** [Download here](https://drive.google.com/drive/folders/1h7dois2zZMLBcx7gl-_0phlILzOUvL8q) → put in `model/`  
+3. Download the **Raga KNN models**:  
+   - Carnatic → [Download here](https://drive.google.com/drive/folders/1OXGknLkShVFQSCZkcIfdIl5eYeCN9T9E) → place in `data/RagaDataset/Carnatic/model/` *(create folders if needed)*  
+   - Hindustani → [Download here](https://drive.google.com/drive/folders/14OMUyhbA2sw2rD6y1-cMINreo-S-GaiE) → place in `data/RagaDataset/Hindustani/model/` *(create folders if needed)*  
 
-Download the Hindustani raga KNN models from here and place them in data\RagaDataset\Hindustani\model.
+---
 
-Data
-Datasets cannot be uploaded here due to licensing restrictions.
-They can be requested from CompMusic.
+## 🎼 Data
 
-Running the Model
-Runtime Input (recording audio)
-bash
-Copy code
+The datasets cannot be uploaded here due to licensing restrictions.  
+They can be requested directly from **CompMusic**:  
+👉 [Request Dataset Here](https://compmusic.upf.edu/node/328)
+
+
+▶️ Running the Model
+🔹 Runtime Input (record live audio)
 python main.py --runtime=True --tradition=h --duration=60
-tradition = h (Hindustani) / c (Carnatic)
 
-duration = length of recording in seconds
 
-File Input (pre-recorded audio)
-bash
-Copy code
-python main.py --runtime_file=<audio_file_path> --tradition=<h/c>
-Example:
+tradition: h (Hindustani) / c (Carnatic)
 
-bash
-Copy code
+duration: recording length in seconds
+
+🔹 File Input (pre-recorded audio)
 python main.py --runtime_file=data/sample_data/Ahira_bhairav_27.wav --tradition=h
-Supports .wav and .mp3 (mp3 will be internally converted to wav).
-
-Simple Output Mode (concise logs)
-bash
-Copy code
-python main.py --runtime_file=<audio_file_path> --tradition=<h/c> --simple_output
-Or set environment flags (PowerShell example):
-
-bash
-Copy code
-$env:TF_CPP_MIN_LOG_LEVEL='3'; $env:RAGA_QUIET='1'; python main.py --runtime_file=<audio_file_path> --tradition=<h/c>
-Supported Ragas
-Carnatic: 40 ragas (see data/carnatic_targets.txt)
-
-Hindustani: 30 ragas (see data/hindustani_targets.txt)
-
-🔹 Advanced Enhancements (New in This Version)
-The advanced/ folder introduces richer models and knowledge-driven refinements:
-
-feature_extraction.py → Extracts spectral, temporal, harmonic, and pitch-based features.
-
-ensemble_models.py → Classifies ragas using XGBoost, Random Forest, Gradient Boosting, SVM, and MLP ensembles.
-
-expert_knowledge.py → Adds musicological rules and common-confusion resolvers.
 
 
-Acknowledgments
-CREPE for pitch extraction.
+Supports .wav and .mp3 (mp3 is auto-converted to wav).
 
-CompMusic and Sankalp Gulati for datasets.
+🔹 Simple Output Mode
 
-Vishwaas Hegde for the original E2ERaga and SPD_KNN repositories.
+For concise logs:
+
+python main.py --runtime_file=<audio_file> --tradition=<h/c> --simple_output
+
+
+Or via environment flags (PowerShell example):
+
+$env:TF_CPP_MIN_LOG_LEVEL='3'; $env:RAGA_QUIET='1'; python main.py --runtime_file=<audio_file> --tradition=<h/c>
+
+🎶 Supported Ragas
+
+Carnatic: 40 ragas
+
+Hindustani: 30 ragas
+
+🔬 Advanced Enhancements
+
+The advanced/ folder introduces richer models & refinements:
+
+🎛 feature_extraction.py → Extracts spectral, temporal, harmonic & pitch features
+
+🧠 ensemble_models.py → XGBoost, Random Forest, Gradient Boosting, SVM, MLP
+
+🎼 expert_knowledge.py → Musicological rules & common-confusion resolvers
+
+🙏 Acknowledgments
+
+🎵 CREPE for pitch extraction
+
+📚 CompMusic & Sankalp Gulati for datasets
+
+👨‍💻 Vishwaas Hegde for the original E2ERaga & SPD_KNN
