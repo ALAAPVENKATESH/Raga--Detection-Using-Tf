@@ -1,19 +1,15 @@
 from __future__ import division
 from __future__ import print_function
-
+import os
 import sys
 from collections import defaultdict
-
 from scipy.io import wavfile
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
 import tensorflow as tf
 from tensorflow.keras.layers import Input, Reshape, Conv2D, BatchNormalization, Conv1D
-<<<<<<< HEAD
 from tensorflow.keras.layers import MaxPool2D, Dropout, Permute, Flatten, Dense, MaxPool1D, Concatenate
-=======
 from tensorflow.keras.layers import MaxPool2D, Dropout, Permute, Flatten, Dense, MaxPool1D, Lambda, Concatenate
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
 from tensorflow.keras.models import Model
 import raga_feature
 import pyhocon
@@ -24,12 +20,9 @@ from resampy import resample
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pickle
 import matplotlib.pyplot as plt
-<<<<<<< HEAD
-=======
 import warnings
 warnings.filterwarnings('ignore')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
 
 models = {
     'tiny': None,
@@ -91,7 +84,7 @@ class CRePE:
         return pitch_model
 
     def predict_pitches(self, audio):
-<<<<<<< HEAD
+
         frames = data_utils.audio_2_frames(audio, self.pitch_config)
         with self.sess.as_default():
             with self.graph.as_default():
@@ -108,9 +101,6 @@ class CRePE:
         print('Argmax')
         print(np.argmax(np.mean(pitches, axis=0)))
         return pitches
-
-=======
-    
         frames = data_utils.audio_2_frames(audio, self.pitch_config)
         with self.sess.as_default():
             with self.graph.as_default():
@@ -119,7 +109,6 @@ class CRePE:
         pitches = np.sum(np.reshape(p, [-1,6,60]),1)
         return pitches
     
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
     def get_pitch_emb(self, x, n_seq, n_frames, model_capacity):
         capacity_multiplier = {
             'tiny': 4, 'small': 8, 'medium': 16, 'large': 24, 'full': 32
@@ -178,14 +167,13 @@ class CRePE:
             y = flat(y)
             y = den(y)
             z.append(y)
-<<<<<<< HEAD
+
         if len(z) == 1:
             y = z[0]
         else:
             y = Concatenate(axis=0)(z)
-=======
+
         y = Concatenate(axis=0)(z)
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
 
         return y, den.weights[0]
 
@@ -193,10 +181,7 @@ class CRePE:
 class SPD_Model:
 
     def __init__(self, tradition):
-<<<<<<< HEAD
         self.tradition = tradition
-=======
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
         self.graph_tonic = tf.Graph()
         self.sess_tonic = tf.compat.v1.Session(graph=self.graph_tonic)
         with self.sess_tonic.as_default():
@@ -247,7 +232,6 @@ class SPD_Model:
 
         if task == 'tonic':
             hist_cqt_batch = Input(shape=(60,4), name='hist_cqt_input', dtype='float32')
-<<<<<<< HEAD
             hist_cqt = hist_cqt_batch[0]
 
             tonic_logits = self.get_tonic_emb(hist_cqt, note_dim, 0.6)
@@ -256,15 +240,14 @@ class SPD_Model:
             tonic_model.compile(loss={'tf_op_layer_tonic': 'binary_crossentropy'},
                               optimizer='adam', metrics={'tf_op_layer_tonic': 'accuracy'},
                               loss_weights={'tf_op_layer_tonic': 1})
-=======
 
             tonic_logits = self.get_tonic_emb(hist_cqt_batch, note_dim, 0.6)
 
             tonic_model = Model(inputs=[hist_cqt_batch], outputs=[tonic_logits])
-            tonic_model.compile(loss={'tonic': 'binary_crossentropy'},
-                              optimizer='adam', metrics={'tonic': 'accuracy'},
-                              loss_weights={'tonic': 1})
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
+            tonic_model.compile(loss='binary_crossentropy',
+                    optimizer='adam',
+                    metrics=['accuracy'])
+
 
             return tonic_model
 
@@ -276,7 +259,7 @@ class SPD_Model:
             return knn_models
 
     def get_hist_emb(self, hist_cqt, note_dim, indices, topk, drop_rate=0.2):
-<<<<<<< HEAD
+
         # hist_cc = [tf.cast(self.standardize(h), tf.float32) for h in hist_cqt]
 
         hist_cc = hist_cqt
@@ -285,7 +268,7 @@ class SPD_Model:
             hist_cc_trans = tf.roll(hist_cc, -indices[i], axis=0)
             hist_cc_all.append(hist_cc_trans)
         hist_cc_all = tf.stack(hist_cc_all)
-=======
+
         # hist_cqt: (batch, 60, 4). If rank 2, add batch dim
         hist_cqt_b = Lambda(lambda x: x, output_shape=(60, 4))(hist_cqt)
         # Stack along new axis topk: (batch, topk, 60, 4)
@@ -295,7 +278,6 @@ class SPD_Model:
         )([hist_cqt_b, indices])
         # Merge (batch, topk) to batch for Conv1D input: (batch*topk, 60, 4)
         hist_cc_all = Lambda(lambda x: tf.reshape(x, (-1, 60, 4)), output_shape=(60, 4))(hist_cc_all_bt)
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
         hist_cc_all = Dropout(0.2)(hist_cc_all)
 
         d = 1
@@ -313,7 +295,7 @@ class SPD_Model:
     def get_tonic_emb(self, hist_cqt, note_dim, drop_rate=0.2):
         topk=9
 
-<<<<<<< HEAD
+
         indices = tf.random.uniform(shape=(topk,), minval=0, maxval=60, dtype=tf.int32)
         hist_emb = self.get_hist_emb(hist_cqt, note_dim, indices, topk, drop_rate)
 
@@ -326,7 +308,6 @@ class SPD_Model:
         tonic_logits = tf.reduce_mean(tonic_logits_norm, axis=0, keepdims=True)
         tonic_logits = tf.roll(tonic_logits,0,axis=1, name='tonic')
         return tonic_logits
-=======
         indices = Lambda(lambda x: tf.random.uniform(shape=(topk,), minval=0, maxval=60, dtype=tf.int32), output_shape=(topk,))(hist_cqt)
         hist_emb = self.get_hist_emb(hist_cqt, note_dim, indices, topk, drop_rate)
 
@@ -338,7 +319,6 @@ class SPD_Model:
         mean_logits = Lambda(lambda x: tf.reduce_mean(x, axis=1), output_shape=(60,))(rolled_bt)  # (batch, 60)
         tonic_out = Lambda(lambda x: x, name='tonic', output_shape=(60,))(mean_logits)
         return tonic_out
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
 
     def convolution_block(self, d, input_data, ks, f, drop_rate):
         if d==1:
@@ -363,7 +343,6 @@ class SPD_Model:
         min_z = tf.reduce_min(z)
         return (z - min_z) / (tf.reduce_max(z) - min_z)
 
-<<<<<<< HEAD
     def _compute_label_scores(self, pitchvalue_prob):
         pred_proba = raga_feature.get_raga_feat_and_predict(self.knn_models, pitchvalue_prob, len(self.raga_list))
         pred_proba = pred_proba.T  # (n_labels, 25)
@@ -421,89 +400,42 @@ class SPD_Model:
                 suggestion = ('hamsadhwani', float(min(0.85, 0.5 + 0.5 * (1 - note_presence[M]) * (1 - note_presence[D]) * note_presence[N])))
         return suggestion
 
-=======
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
-    def  predict_tonic_raga(self, crepe, audio, pitchvalue_prob, tonic=None):
+    def predict_tonic_raga(self, crepe, audio, pitches, tonic=None):
+        # Restored working SPD-KNN flow
+        pitchvalue_prob = pitches
         if tonic is None:
             hist_cqt = data_utils.get_hist_cqt(audio, pitchvalue_prob)
             with self.sess_tonic.as_default():
                 with self.graph_tonic.as_default():
                     pred_tonic = self.tonic_model.predict(hist_cqt)[0]
-<<<<<<< HEAD
-                    print("Tonic Prediction Complete")
-=======
                     import os
                     if os.environ.get('RAGA_QUIET') != '1':
                         print("Tonic Prediction Complete")
 
-            import os
-            if os.environ.get('RAGA_QUIET') != '1':
-                print('pred_tonic', pred_tonic)
-                print('argmax pred_tonic', np.argmax(pred_tonic))
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
-
             pred_12 = np.sum(np.reshape(pred_tonic, [12, 5]), 1)
             tonic_12 = standard_tonic[np.argmax(pred_12)]
             tonic = np.argmax(pred_tonic)
-            # tonic = tonic-3
-
-            # tonic = 20
         else:
             tonic_12 = standard_tonic.index(tonic)
             tonic = tonic_12*5
-            tonic = tonic+3  # Ugly hack to fix some tonic issue
+            tonic = tonic+3
 
-        # tonic = 20
         pitchvalue_prob = crepe.stretch(pitchvalue_prob)
         tonic = tonic*2
-<<<<<<< HEAD
-        pitchvalue_prob = np.roll(pitchvalue_prob, -tonic, axis=1)
-
-        # Estimate note presence and optionally attenuate absent degrees (M, D)
-        note_presence = self._estimate_note_presence(pitchvalue_prob)
-        S, R, G, M, P, D, N = 0, 2, 4, 5, 7, 9, 11
-        core_mean = np.mean([note_presence[S], note_presence[R], note_presence[G], note_presence[P], note_presence[N]])
-        m_absent = note_presence[M] < max(0.03, 0.25 * core_mean)
-        d_absent = note_presence[D] < max(0.03, 0.25 * core_mean)
-        n_present = note_presence[N] > max(0.06, 0.5 * core_mean)
-
-        pv_for_scoring = pitchvalue_prob.copy()
-        if m_absent and d_absent and n_present:
-            for k in [M, D]:
-                pv_for_scoring[:, k*10:(k+1)*10] *= 0.3
-
-        # Aggregate probabilities over segments of the full clip
-        scores = self._segment_and_aggregate_scores(pv_for_scoring)
-        top_indices = np.argsort(scores)[::-1]
-        top1_idx = int(top_indices[0])
-        top3_idx = [int(i) for i in top_indices[:3]]
-        top1_label = self.raga_list[top1_idx]
-        top3 = [(self.raga_list[i], float(scores[i])) for i in top3_idx]
-
-        # Pentatonic derivative check using note absence/presence
-        suggestion = self._recheck_pentatonic_derivatives(top1_label, float(scores[top1_idx]), note_presence)
-
-        return {
-            'tonic': tonic_12,
-            'top1': (top1_label, float(scores[top1_idx])),
-            'top3': top3,
-            'suggestion': suggestion
-        }
-=======
         import os
         if os.environ.get('RAGA_QUIET') != '1':
             print('tonic', tonic)
         pitchvalue_prob = np.roll(pitchvalue_prob, -tonic, axis=1)
 
         pred_proba = raga_feature.get_raga_feat_and_predict(self.knn_models, pitchvalue_prob, len(self.raga_list))
-        pred_proba = pred_proba.T  # (n_labels, 25)
+        pred_proba = pred_proba.T
 
         models_weights = np.expand_dims(self.models_weights, 1)
         y_pred = np.matmul(pred_proba, models_weights)[:,0]
         y_pred = np.argmax(y_pred, 0)
         pred_raga = self.raga_list[y_pred]
         return tonic_12, pred_raga
->>>>>>> a150c6c (Sync: updates to advanced rules, README, requirements, simple output)
+
 
     def get_raga_list(self, raga_config, tradition):
         raga_list = pd.read_csv(raga_config['{}_targets'.format(tradition)], header=None)
