@@ -30,7 +30,7 @@ The base pipeline remains the same (*CREPE-based pitch extraction + KNN models*)
 **Install dependencies:**
 ```bash
 pip install -r requirements.txt
-
+```
 
 ## ⚙️ Model Setup
 
@@ -50,7 +50,7 @@ The datasets cannot be uploaded here due to licensing restrictions.
 They can be requested directly from **CompMusic**:  
 👉 [Request Dataset Here](https://compmusic.upf.edu/node/328)
 
-
+```bash
 ▶️ Running the Model
 🔹 Runtime Input (record live audio)
 python main.py --runtime=True --tradition=h --duration=60
@@ -71,6 +71,7 @@ Supports .wav and .mp3 (mp3 is auto-converted to wav).
 For concise logs:
 
 python main.py --runtime_file=<audio_file> --tradition=<h/c> --simple_output
+```
 
 
 Or via environment flags (PowerShell example):
